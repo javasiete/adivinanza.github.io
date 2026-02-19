@@ -1,16 +1,8 @@
-// Precargar sonido de click
+// ====== PRECARGA DE SONIDO ======
 const sonidoClick = new Audio("sonidos/click.wav");
 sonidoClick.preload = "auto";
 
-// Precargar imágenes de clubes en caché
-function precargarImagenes(rutas) {
-  rutas.forEach((ruta) => {
-    const img = new Image();
-    img.src = ruta;
-  });
-}
-
-// Array de clubes argentinos (rutas de imágenes)
+// ====== ARRAY DE CLUBES ======
 const clubes_argentinos = [
   "imgs/argentinos.png",
   "imgs/atleticoTucuman.png",
@@ -29,41 +21,76 @@ const clubes_argentinos = [
   "imgs/velez.png"
 ];
 
-// Letras de la A a la Z
+// ====== LETRAS A-Z ======
 const letras = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
-// Referencias a los elementos del HTML
+// ====== REFERENCIAS DOM ======
 const boton = document.getElementById("btn-comenzar");
 const cajaIzquierda = document.getElementById("caja-izquierda");
 const cajaDerecha = document.getElementById("caja-derecha");
 const equis = document.querySelector(".equis");
 
-// Variable para evitar múltiples contadores a la vez
+// ====== VARIABLES DE CONTROL ======
 let contadorActivo = false;
+let imagenesPrecargadas = false;
 
-// Evento al hacer click en "Comenzar"
+// ====== FUNCIÓN DE PRECARGA REAL (ESPERA CARGA COMPLETA) ======
+function precargarImagenes(rutas) {
+  return Promise.all(
+    rutas.map((ruta) => {
+      return new Promise((resolve) => {
+        const img = new Image();
+        img.src = ruta;
+
+        // Cuando la imagen termina de cargar (o falla), resolvemos
+        img.onload = () => resolve();
+        img.onerror = () => {
+          console.warn("No se pudo cargar:", ruta);
+          resolve(); // Evita que el juego se bloquee si falta una imagen
+        };
+      });
+    })
+  );
+}
+
+// ====== BLOQUEAR BOTÓN HASTA QUE TODO CARGUE ======
+boton.disabled = true;
+boton.textContent = "Cargando...";
+
+// Precargar imágenes al iniciar la página
+precargarImagenes(clubes_argentinos).then(() => {
+  imagenesPrecargadas = true;
+  boton.disabled = false;
+  boton.textContent = "Comenzar";
+  console.log("Todas las imágenes fueron precargadas");
+});
+
+// ====== EVENTO CLICK ======
 boton.addEventListener("click", () => {
-  // Reproducir sonido al hacer click
-  sonidoClick.currentTime = 0; // reinicia por si se hace click rápido
-  sonidoClick.play();
+  // Seguridad extra: si aún no cargaron (por red lenta)
+  if (!imagenesPrecargadas) return;
 
-  // Si ya hay un contador corriendo, no hacer nada
+  // Reproducir sonido al hacer click
+  sonidoClick.currentTime = 0;
+  sonidoClick.play().catch(() => {});
+
+  // Evitar múltiples contadores simultáneos
   if (contadorActivo) return;
 
   contadorActivo = true;
 
-  // 1) Vaciar las cajas
+  // 1) Vaciar las cajas inmediatamente
   cajaIzquierda.innerHTML = "";
   cajaDerecha.textContent = "";
 
-  // 2) Generar los resultados ANTES (pero no mostrarlos aún)
+  // 2) Elegir resultados ANTES del contador (revelación sincronizada)
   const indiceClub = Math.floor(Math.random() * clubes_argentinos.length);
   const clubAleatorio = clubes_argentinos[indiceClub];
 
   const indiceLetra = Math.floor(Math.random() * letras.length);
   const letraAleatoria = letras[indiceLetra];
 
-  // 3) Iniciar cuenta regresiva desde 6
+  // 3) Cuenta regresiva desde 6
   let contador = 6;
   equis.textContent = contador;
 
@@ -75,14 +102,16 @@ boton.addEventListener("click", () => {
     } else {
       clearInterval(intervalo);
 
+      // Volver a mostrar la X
       equis.textContent = "X";
 
-      cajaIzquierda.innerHTML = `
-        <img src="${clubAleatorio}" alt="club">
-      `;
+      // Mostrar imagen (instantánea gracias a la precarga)
+      cajaIzquierda.innerHTML = `<img src="${clubAleatorio}" alt="club">`;
 
+      // Mostrar letra al mismo tiempo
       cajaDerecha.textContent = letraAleatoria;
 
+      // Permitir nuevo click
       contadorActivo = false;
     }
   }, 1000);
