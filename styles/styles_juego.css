@@ -1,0 +1,109 @@
+/* Selector universal */
+* {
+  font-family: "Ubuntu", sans-serif;
+  font-weight: 400;
+
+  margin: 0px;
+  background-color:black;
+}
+
+/* Defino las variables */
+:root {
+  --rojo: #9f3647;
+}
+
+h3 {
+  font-style:italic;
+}
+
+h4 {
+  font-style:italic;
+}
+
+/* ***************************PAGINA 1*************************** */
+
+body {
+  margin: 0;
+  background-color: black;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  font-family: Arial, sans-serif;
+  color: white;
+}
+
+.contenedor {
+  text-align: center;
+}
+
+.contenedor_cajas {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 20px; /* espacio entre divs y la X */
+  margin-bottom: 40px;
+}
+
+.caja {
+  width: 200px;
+  height: 200px;
+  border: 3px solid white;
+  background-color: black;
+  color: white;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  font-size: 175px;
+  font-weight: bold;
+
+  text-align: center;
+  padding: 10px;
+}
+
+.caja img {
+  width: 95%;
+  height: 95%;
+  object-fit: contain;
+}
+
+.equis {
+  color: white;
+  font-size: 40px;
+  font-weight: bold;
+
+  /* CLAVE para eliminar el salto */
+  width: 60px;          /* espacio fijo */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  /* Mejora visual para números */
+  font-variant-numeric: tabular-nums;
+}
+
+.boton {
+  background-color: orange;
+  color: black;
+  border: none;
+  padding: 12px 30px;
+  font-size: 18px;
+  cursor: pointer;
+  border-radius: 5px;
+}
+
+.boton:hover {
+  opacity: 0.85;
+}
+
+/*---------------------------------------------------------------------------------------------------------------------------*/
+
+/* Para Celulares (Desde 768px o menos) */
+@media only screen and (max-width: 768px){
+ 
+
+}
