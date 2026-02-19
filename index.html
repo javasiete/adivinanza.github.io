@@ -17,7 +17,19 @@
   <body>
     <!-- Inicio del Header -->
 
-    <h3>Nombra al jugador que pasó por este Club</h3> <br>
+    <div class="selector-modo">
+      <label>
+        <input type="radio" name="modo" value="v1" checked>
+        Versión 1 (Club + Letra)
+      </label>
+    
+      <label>
+        <input type="radio" name="modo" value="v2">
+        Versión 2 (Colores de Uniforme)
+      </label>
+    </div>
+
+    <h3 id="titulo-juego">Nombra al jugador que pasó por este Club</h3> <br>
 
     <div class="contenedor">
       <div class="contenedor_cajas">

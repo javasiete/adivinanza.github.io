@@ -14,6 +14,7 @@
 
 h3 {
   font-style:italic;
+  color: orange;
 }
 
 h4 {
@@ -33,6 +34,17 @@ body {
   height: 100vh;
   font-family: Arial, sans-serif;
   color: white;
+}
+
+.selector-modo {
+  color: white;
+  margin-bottom: 20px;
+  font-size: 18px;
+}
+
+.selector-modo label {
+  margin: 0 15px;
+  cursor: pointer;
 }
 
 .contenedor {
@@ -86,8 +98,15 @@ body {
   font-variant-numeric: tabular-nums;
 }
 
+.circulo-color {
+  width: 85%;
+  height: 85%;
+  border-radius: 50%; /* Hace el círculo */
+  border: 3px solid white; /* opcional pero queda muy pro */
+}
+
 .boton {
-  background-color: orange;
+  background-color: orange;;
   color: black;
   border: none;
   padding: 12px 30px;

@@ -21,6 +21,17 @@ const clubes_argentinos = [
   "imgs/velez.png"
 ];
 
+// ====== COLORES PARA MODO 2 ======
+const colores = [
+  "#d11928", // rojo
+  "#1410d6", // azul
+  "#069c06", // verde
+  "#f09308", // naranja
+  "#ffee00", // amarillo
+  "#ffffff", // blanco
+  "#000000", // negro
+];
+
 // ====== LETRAS A-Z ======
 const letras = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
@@ -29,12 +40,47 @@ const boton = document.getElementById("btn-comenzar");
 const cajaIzquierda = document.getElementById("caja-izquierda");
 const cajaDerecha = document.getElementById("caja-derecha");
 const equis = document.querySelector(".equis");
+const radiosModo = document.querySelectorAll('input[name="modo"]');
+const tituloJuego = document.getElementById("titulo-juego");
 
 // ====== VARIABLES DE CONTROL ======
 let contadorActivo = false;
 let imagenesPrecargadas = false;
 
-// ====== FUNCIÓN DE PRECARGA REAL (ESPERA CARGA COMPLETA) ======
+// ====== OBTENER MODO ACTUAL ======
+function obtenerModo() {
+  const seleccionado = document.querySelector('input[name="modo"]:checked');
+  return seleccionado ? seleccionado.value : "v1";
+}
+
+// ====== ACTUALIZAR TÍTULO SEGÚN MODO ======
+function actualizarTitulo() {
+  const modo = obtenerModo();
+
+  if (modo === "v1") {
+    tituloJuego.textContent = "Nombra al jugador que pasó por este Club";
+  }
+
+  if (modo === "v2") {
+    tituloJuego.textContent = "Nombra al Club que lleva estos colores en su Uniforme";
+  }
+}
+
+// ====== CAMBIAR TÍTULO AL CAMBIAR DE MODO ======
+radiosModo.forEach((radio) => {
+  radio.addEventListener("change", () => {
+    actualizarTitulo();
+
+    // Reset visual al cambiar modo (evita confusión visual)
+    cajaIzquierda.innerHTML = "";
+    cajaDerecha.textContent = "";
+    cajaIzquierda.style.backgroundColor = "black";
+    cajaDerecha.style.backgroundColor = "black";
+  });
+});
+
+
+// ====== FUNCIÓN DE PRECARGA REAL ======
 function precargarImagenes(rutas) {
   return Promise.all(
     rutas.map((ruta) => {
@@ -42,11 +88,10 @@ function precargarImagenes(rutas) {
         const img = new Image();
         img.src = ruta;
 
-        // Cuando la imagen termina de cargar (o falla), resolvemos
         img.onload = () => resolve();
         img.onerror = () => {
           console.warn("No se pudo cargar:", ruta);
-          resolve(); // Evita que el juego se bloquee si falta una imagen
+          resolve();
         };
       });
     })
@@ -62,35 +107,30 @@ precargarImagenes(clubes_argentinos).then(() => {
   imagenesPrecargadas = true;
   boton.disabled = false;
   boton.textContent = "Comenzar";
-  console.log("Todas las imágenes fueron precargadas");
+  console.log("Imágenes precargadas correctamente");
 });
 
 // ====== EVENTO CLICK ======
 boton.addEventListener("click", () => {
-  // Seguridad extra: si aún no cargaron (por red lenta)
   if (!imagenesPrecargadas) return;
+  if (contadorActivo) return;
 
-  // Reproducir sonido al hacer click
+  // Reproducir sonido
   sonidoClick.currentTime = 0;
   sonidoClick.play().catch(() => {});
 
-  // Evitar múltiples contadores simultáneos
-  if (contadorActivo) return;
-
   contadorActivo = true;
 
-  // 1) Vaciar las cajas inmediatamente
+  // Obtener modo seleccionado EN TIEMPO REAL
+  const modo = obtenerModo();
+
+  // Reset visual inmediato (clave para sincronización)
   cajaIzquierda.innerHTML = "";
   cajaDerecha.textContent = "";
+  cajaIzquierda.style.backgroundColor = "black";
+  cajaDerecha.style.backgroundColor = "black";
 
-  // 2) Elegir resultados ANTES del contador (revelación sincronizada)
-  const indiceClub = Math.floor(Math.random() * clubes_argentinos.length);
-  const clubAleatorio = clubes_argentinos[indiceClub];
-
-  const indiceLetra = Math.floor(Math.random() * letras.length);
-  const letraAleatoria = letras[indiceLetra];
-
-  // 3) Cuenta regresiva desde 6
+  // ====== CUENTA REGRESIVA ======
   let contador = 6;
   equis.textContent = contador;
 
@@ -101,19 +141,39 @@ boton.addEventListener("click", () => {
       equis.textContent = contador;
     } else {
       clearInterval(intervalo);
-
-      // Volver a mostrar la X
       equis.textContent = "X";
 
-      // Mostrar imagen (instantánea gracias a la precarga)
-      cajaIzquierda.innerHTML = `<img src="${clubAleatorio}" alt="club">`;
+      // ====== MODO 1: CLUB + LETRA ======
+      if (modo === "v1") {
+        const indiceClub = Math.floor(Math.random() * clubes_argentinos.length);
+        const clubAleatorio = clubes_argentinos[indiceClub];
 
-      // Mostrar letra al mismo tiempo
-      cajaDerecha.textContent = letraAleatoria;
+        const indiceLetra = Math.floor(Math.random() * letras.length);
+        const letraAleatoria = letras[indiceLetra];
 
-      // Permitir nuevo click
+        // Imagen instantánea (ya precargada)
+        cajaIzquierda.innerHTML = `<img src="${clubAleatorio}" alt="club">`;
+
+        // Letra sincronizada
+        cajaDerecha.textContent = letraAleatoria;
+      }
+      
+      // ====== MODO 2: COLORES EN FORMA DE CÍRCULO ======
+      if (modo === "v2") {
+        const colorIzq = colores[Math.floor(Math.random() * colores.length)];
+        const colorDer = colores[Math.floor(Math.random() * colores.length)];
+
+        // Crear círculos de color dentro de las cajas
+        cajaIzquierda.innerHTML = `
+          <div class="circulo-color" style="background-color: ${colorIzq};"></div>
+        `;
+
+        cajaDerecha.innerHTML = `
+          <div class="circulo-color" style="background-color: ${colorDer};"></div>
+        `;
+      }
+
       contadorActivo = false;
     }
   }, 1000);
 });
-
