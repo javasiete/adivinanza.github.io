@@ -2,7 +2,7 @@
 const sonidoClick = new Audio("sonidos/click.wav");
 sonidoClick.preload = "auto";
 
-// ====== ARRAY DE CLUBES ======
+// ====== ARRAY DE CLUBES (Liga Argentina) ======
 const clubes_argentinos = [
   "imgs/argentinos.png",
   "imgs/atleticoTucuman.png",
@@ -21,7 +21,7 @@ const clubes_argentinos = [
   "imgs/velez.png"
 ];
 
-// ====== COLORES PARA MODO 2 ======
+// ====== COLORES > Para el juego 2 ======
 const colores = [
   "#d11928", // rojo
   "#1410d6", // azul
@@ -31,6 +31,9 @@ const colores = [
   "#ffffff", // blanco
   "#000000", // negro
 ];
+
+// ====== LETRAS FINALES > Para el Juego 3 ======
+const letrasFinales = ["A", "E", "I", "O", "U", "S"];
 
 // ====== LETRAS A-Z ======
 const letras = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
@@ -63,6 +66,10 @@ function actualizarTitulo() {
 
   if (modo === "v2") {
     tituloJuego.textContent = "Nombra al Club que lleva estos colores en su Uniforme";
+  }
+
+  if (modo === "v3") {
+    tituloJuego.textContent = "Forma una palabra con su letra Inicial y su letra Final";
   }
 }
 
@@ -173,6 +180,22 @@ boton.addEventListener("click", () => {
         `;
       }
 
+      // ====== MODO 3: LETRA INICIAL Y FINAL ======
+      if (modo === "v3") {
+        // Letra inicial (A-Z completa)
+        const indiceLetraIzq = Math.floor(Math.random() * letras.length);
+        const letraInicial = letras[indiceLetraIzq];
+      
+        // Letra final (solo vocales + S)
+        const indiceLetraFinal = Math.floor(Math.random() * letrasFinales.length);
+        const letraFinal = letrasFinales[indiceLetraFinal];
+      
+        // Mostrar en cajas
+        cajaIzquierda.textContent = letraInicial;
+        cajaDerecha.textContent = letraFinal;
+      }
+
+      // Esto no se toca
       contadorActivo = false;
     }
   }, 1000);
